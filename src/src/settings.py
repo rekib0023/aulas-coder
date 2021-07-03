@@ -1,9 +1,4 @@
 import os
-import environ
-
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,12 +11,15 @@ MEDIA_DIR = os.path.join(BASE_DIR, "media")
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", 'changeme')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get("DEBUG")))
+DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = []
+ALLOWED_HOSTS_ENV = os.environ.get("ALLOWED_HOSTS")
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 # CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
@@ -78,12 +76,13 @@ WSGI_APPLICATION = "src.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get('DATABASE_NAME'),
-        "USER": os.environ.get('DATABASE_USER'),
-        "PASSWORD": os.environ.get('DATABASE_PASSWORD'),
-        "HOST": os.environ.get('DATABASE_HOST'),
-        "PORT": os.environ.get('DATABASE_PORT')
+        "ENGINE": "django.db.backends.sqlite3",
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # "NAME": os.environ.get('DATABASE_NAME'),
+        # "USER": os.environ.get('DATABASE_USER'),
+        # "PASSWORD": os.environ.get('DATABASE_PASSWORD'),
+        # "HOST": os.environ.get('DATABASE_HOST'),
+        # "PORT": os.environ.get('DATABASE_PORT')
     }
 }
 
@@ -131,10 +130,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-# STATIC_ROOT = "/home/static/"
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
-print(STATIC_ROOT)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "assets", "media_root")
+STATIC_URL = "/static/static/"
+MEDIA_URL = "/static/media/"
+
+STATIC_ROOT = "/vol/web/static"
+MEDIA_ROOT = "/vol/web/media"
+
+
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+# # STATIC_ROOT = "/home/static/"
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
+# print(STATIC_ROOT)
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "assets", "media_root")
